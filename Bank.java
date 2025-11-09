@@ -1,10 +1,15 @@
+package AutomatedTellerMachine; //import package 
+				 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class Bank {
 
-    private String accountNo; // Store the account number entered by the user
+    private String accountNo;// Store the account number entered by the user
+    private String pass; // Store  the password
+
 
     // Entry method to capture account number
     public void entry() {
@@ -13,12 +18,12 @@ public class Bank {
                 "Account Entry",
                 JOptionPane.PLAIN_MESSAGE);
 
-        if (accountNo == null || accountNo.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No account number entered. Exiting.");
-            System.exit(0);
-        } else {
-            JOptionPane.showMessageDialog(null, "Account Number captured: " + accountNo);
-        }
+        pass = JOptionPane.showInputDialog(null,
+                "Enter PIN",
+                "PIN Entry",
+                JOptionPane.PLAIN_MESSAGE);
+
+        JOptionPane.showMessageDialog(null, "Account: " + accountNo + "\nPIN: " + pass);
     }
 
     // Method to show the main banking GUI
