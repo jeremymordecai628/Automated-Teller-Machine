@@ -11,22 +11,31 @@ public class Data {
     /**
      * Get a database connection
      */
-    private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+    private static Connection getConnection() {
+        try {
+            Class.forName("org.sqlite.JDBC");  // ✅ load SQLite driver
+            return DriverManager.getConnection(DB_URL);
+        } catch (ClassNotFoundException e) {
+            System.out.println("❌ SQLite JDBC driver not found: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("❌ Database connection error: " + e.getMessage());
+        }
+        return null;
     }
 
     /**
      * Authenticate user by account number and password
-     *
-     * @param accountNo Account number
-     * @param password  Password
-     * @return true if valid, false otherwise
      */
     public boolean authenticate(String accountNo, String password) {
         String sql = "SELECT * FROM user WHERE account_no = ? AND password = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (conn == null) {
+                System.out.println("⚠️ Connection failed.");
+                return false;
+            }
 
             pstmt.setString(1, accountNo);
             pstmt.setString(2, password);
@@ -35,22 +44,21 @@ public class Data {
             return rs.next();
 
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            System.out.println("❌ Database error: " + e.getMessage());
             return false;
         }
     }
 
     /**
      * Get account balance
-     *
-     * @param accountNo Account number
-     * @return balance, or -1 if account not found
      */
     public double getBalance(String accountNo) {
         String sql = "SELECT balance FROM account WHERE account_no = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (conn == null) return -1;
 
             pstmt.setString(1, accountNo);
             ResultSet rs = pstmt.executeQuery();
@@ -60,7 +68,7 @@ public class Data {
             }
 
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            System.out.println("❌ Database error: " + e.getMessage());
         }
 
         return -1; // account not found
@@ -68,16 +76,14 @@ public class Data {
 
     /**
      * Update account balance
-     *
-     * @param accountNo Account number
-     * @param newBalance New balance to set
-     * @return true if update successful
      */
     public boolean updateBalance(String accountNo, double newBalance) {
         String sql = "UPDATE account SET balance = ? WHERE account_no = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (conn == null) return false;
 
             pstmt.setDouble(1, newBalance);
             pstmt.setString(2, accountNo);
@@ -86,12 +92,12 @@ public class Data {
             return rows > 0;
 
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            System.out.println("❌ Database error: " + e.getMessage());
             return false;
         }
     }
 
-    // Test the class
+    // ✅ Test method
     public static void main(String[] args) {
         Data data = new Data();
 
@@ -104,8 +110,10 @@ public class Data {
             System.out.println("Current balance: " + balance);
 
             double newBalance = balance + 500; // deposit example
-            data.updateBalance(accountNo, newBalance);
-            System.out.println("Balance after deposit: " + data.getBalance(accountNo));
+            if (data.updateBalance(accountNo, newBalance)) {
+                System.out.println("💰 Balance updated!");
+            }
+            System.out.println("New balance: " + data.getBalance(accountNo));
         } else {
             System.out.println("❌ Invalid account or password");
         }
