@@ -8,7 +8,10 @@ import java.awt.event.*;
 public class Bank {
 
     private String accountNo;// Store the account number entered by the user
-    private String pass; // Store  the password
+    private String password;// Store  the password
+    
+    // Call the Data  class
+    Data data = new Data() ;
 
 
     // Entry method to capture account number
@@ -18,12 +21,16 @@ public class Bank {
                 "Account Entry",
                 JOptionPane.PLAIN_MESSAGE);
 
-        pass = JOptionPane.showInputDialog(null,
+        password = JOptionPane.showInputDialog(null,
                 "Enter PIN",
                 "PIN Entry",
                 JOptionPane.PLAIN_MESSAGE);
-
-        JOptionPane.showMessageDialog(null, "Account: " + accountNo + "\nPIN: " + pass);
+	 if (data.authenticate(accountNo, password)) {
+		 JOptionPane.showMessageDialog(null,  "Login successful!");
+	 }else{
+		  JOptionPane.showMessageDialog(null, "Authetication failed kindly try again.");
+		  System.exit(0);
+	 }
     }
 
     // Method to show the main banking GUI
@@ -42,6 +49,7 @@ public class Bank {
         frame.add(button3);
 
 	button1.addActionListener(e -> {
+		double balance = data.getBalance(accountNo);
 		String Deposit = JOptionPane.showInputDialog(
 				null,
 				"Enter the amount you want to deposit:",
@@ -51,23 +59,25 @@ public class Bank {
 		
 		JOptionPane.showMessageDialog(
 				frame,
-				"Deposit for Account " + accountNo + ": " + Deposit );
+				"Deposit for Account " + accountNo + ": " + Deposit +":" +balance );
 	});
 
 
 
         button2.addActionListener(e -> {
+		double balance = data.getBalance(accountNo);
 		String Amount=JOptionPane.showInputDialog(
 				null,
 				"Enter the amount you wanna Withdrawal:",
 				"Amount Withdrawal",
 				JOptionPane.PLAIN_MESSAGE
 				);
-		JOptionPane.showMessageDialog(frame, "Withdrawal for Account " + accountNo + ":" +Amount );
+		JOptionPane.showMessageDialog(frame, "Withdrawal for Account " + accountNo + ":" +Amount + ":" +balance );
         });
 
         button3.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Check Balance for Account " + accountNo);
+		double balance = data.getBalance(accountNo);
+		JOptionPane.showMessageDialog(frame, "Check Balance for Account " + accountNo + ":" +balance);
         });
 
         frame.setVisible(true);
