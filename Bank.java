@@ -10,8 +10,11 @@ public class Bank {
     private String accountNo;// Store the account number entered by the user
     private String password;// Store  the password
     
-    // Call the Data  class
+    // Call the neccesary   classes
     Data data = new Data() ;
+    Deposit deposit = new Deposit(); // This is Mandy's  class
+    Withdrawal withdraw = new  Withdrawal(); 
+
 
 
     // Entry method to capture account number
@@ -49,30 +52,34 @@ public class Bank {
         frame.add(button3);
 
 	button1.addActionListener(e -> {
-		double balance = data.getBalance(accountNo);
-		String Deposit = JOptionPane.showInputDialog(
+		String Deposit= JOptionPane.showInputDialog(
 				null,
 				"Enter the amount you want to deposit:",
 				"Amount Entry",
 				JOptionPane.PLAIN_MESSAGE
 				);
+
+		double amount = Double.parseDouble(Deposit);
+		// Call Mandy's  class  
+		double newBalance = deposit.deposit(accountNo, amount);
 		
 		JOptionPane.showMessageDialog(
 				frame,
-				"Deposit for Account " + accountNo + ": " + Deposit +":" +balance );
+				"Deposit for Account " + accountNo + "the  amount deposisted " + Deposit +"your new balance" +newBalance );
 	});
 
 
 
         button2.addActionListener(e -> {
-		double balance = data.getBalance(accountNo);
 		String Amount=JOptionPane.showInputDialog(
 				null,
 				"Enter the amount you wanna Withdrawal:",
 				"Amount Withdrawal",
 				JOptionPane.PLAIN_MESSAGE
 				);
-		JOptionPane.showMessageDialog(frame, "Withdrawal for Account " + accountNo + ":" +Amount + ":" +balance );
+		double amount = Double.parseDouble(Amount);
+		double newBalance = withdraw.withdraw(accountNo, amount);
+		JOptionPane.showMessageDialog(frame, "Withdrawal for Account " + accountNo + ":" +Amount + ":" +newBalance );
         });
 
         button3.addActionListener(e -> {
